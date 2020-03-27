@@ -11,11 +11,12 @@ class Player
 		bool isAI;
 		bool completed;
 
-		Player(const bool& isAI);
+		//Player();
 		void AddCard(const short& card);
 		void RemoveCard(const short& index);
 		short GetHandSize() const;
 
 		std::string HandToString();
+		virtual short& ChooseCard() = 0;
+		virtual short& ChoosePile() = 0;
 };
-

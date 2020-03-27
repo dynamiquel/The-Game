@@ -1,6 +1,7 @@
-#include "CardHandler.h"
+﻿#include "CardHandler.h"
 #include <random>
 #include <chrono>
+#include <iostream>
 
 CardHandler::CardHandler()
 {
@@ -79,7 +80,7 @@ void CardHandler::EmptyPlayPiles()
 }
 
 // Gives the players cards for their hand.
-void CardHandler::DealCards(std::vector<Player>& players)
+void CardHandler::DealCards(std::vector<std::unique_ptr<Player>>& players)
 {
 	short handSize = GetHandSize(players.size());
 
@@ -87,13 +88,13 @@ void CardHandler::DealCards(std::vector<Player>& players)
 		return;
 
 	// For every player, give them the required number of cards.
-	for (Player& player : players)
+	for (auto& player : players)
 	{
-		while (player.GetHandSize() < handSize)
+		while (player->GetHandSize() < handSize)
 		{
 			short card;
 			if (WithdrawFromDrawPile(card))
-				player.AddCard(card);
+				player->AddCard(card);
 			else
 			{
 				break;
@@ -140,10 +141,11 @@ std::string CardHandler::PlayPilesToString()
 {
 	std::string s = "Play Piles:";
 
-	for (short i = 0; i < 4; i++)
-	{
-		s.append("\n    (" + std::to_string(i + 1) + ") Top Card: " + std::to_string(playPiles[i].topCard));
-	}
+	for (short i = 0; i < 2; i++)
+		s.append("\n    (" + std::to_string(i + 1) + ") ^ - Top Card: " + std::to_string(playPiles[i].topCard));
+
+	for (short i = 2; i < 4; i++)
+		s.append("\n    (" + std::to_string(i + 1) + ") v - Top Card: " + std::to_string(playPiles[i].topCard));
 
 	return s;
 }

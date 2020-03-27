@@ -1,5 +1,7 @@
 #include "PlayerHandler.h"
 #include "Utilities.h"
+#include "RealPlayer.h"
+#include "AIPlayer.h"
 #include <iostream>
 
 PlayerHandler::PlayerHandler()
@@ -25,7 +27,7 @@ void PlayerHandler::SetCurrentPlayer(const short& playerIndex)
 }
 
 // Returns a reference of the players' vector.
-std::vector<Player>& PlayerHandler::GetPlayers()
+std::vector<std::unique_ptr<Player>>& PlayerHandler::GetPlayers()
 {
 	return players;
 }
@@ -34,8 +36,8 @@ short& PlayerHandler::GetTotalNumberOfPlayerCards()
 {
 	short totalCount = 0;
 
-	for (Player& player : players)
-		totalCount += player.GetHandSize();
+	for (auto& player : players)
+		totalCount += player->GetHandSize();
 
 	return totalCount;
 }
@@ -54,7 +56,7 @@ void PlayerHandler::SetupPlayers()
 	// Adds the real players to the player's vector.
 	while (i < numOfPlayers)
 	{
-		players.push_back(Player(false));
+		players.push_back(std::unique_ptr<Player>(std::unique_ptr<RealPlayer>(new RealPlayer)));
 		i++;
 	}
 
@@ -62,7 +64,7 @@ void PlayerHandler::SetupPlayers()
 	// Adds the AI players to the player's vector.
 	while (i < numOfAI)
 	{
-		players.push_back(Player(true));
+		players.push_back(std::unique_ptr<Player>(std::unique_ptr<AIPlayer>(new AIPlayer)));
 		i++;
 	}
 }
@@ -133,7 +135,7 @@ short& PlayerHandler::GetNextPlayer()
 			//printf("\nUp we go!, %d", potentialNextPlayer);
 		}
 
-		if (!players[potentialNextPlayer].completed)
+		if (!players[potentialNextPlayer]->completed)
 		{
 			//printf("\nNext player: %d", potentialNextPlayer);
 			return potentialNextPlayer;
@@ -167,7 +169,7 @@ void PlayerHandler::SetNextPlayer()
 }
 
 // Returns true if the player is able to play.
-bool PlayerHandler::CanPlay(const std::vector<short>& hand, const short& drawPileSize, const PlayPile* playPiles) const
+bool PlayerHandler::CanPlay(const std::vector<short>& hand, const short& drawPileSize, const PlayPile* playPiles, const short& cardsPlayed) const
 {
 	short playableCards = 0;
 
@@ -184,7 +186,7 @@ bool PlayerHandler::CanPlay(const std::vector<short>& hand, const short& drawPil
 		}
 
 		// If the player has two playable cards, or has one playable card and the draw pile is empty, they can play.
-		if (playableCards == 2 || (playableCards == 1 && drawPileSize == 0))
+		if (playableCards + cardsPlayed >= 2 || (playableCards + cardsPlayed == 1 && drawPileSize == 0))
 			return true;
 	}
 
