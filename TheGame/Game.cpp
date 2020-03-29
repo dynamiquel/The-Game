@@ -3,9 +3,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <memory>
 
 // TODO:
-// Fix CanPlay()
 // Add AI players
 
 Game::Game()
@@ -52,16 +52,12 @@ void Game::OnLoop()
 	printf("\n\n============================================================");
 	printf("\n\nCurrent Player: %d", playerHandler.GetCurrentPlayer());
 
-	// References the player currently playing.
-	Player& activePlayer = playerHandler.GetPlayers()[playerHandler.GetCurrentPlayer()];
+	// Gets the unique pointer of the player currently playing.
+	// Converts the unique pointer to a reference to remove the 'it is a deleted function' error.
+	Player& activePlayer = *(playerHandler.GetPlayers()[playerHandler.GetCurrentPlayer()]);
 
-	// If it's not possible the player can play, call the OnLoss() method.
-	if (!playerHandler.CanPlay(activePlayer.hand, cardHandler.GetDrawPileSize(), cardHandler.GetPlayPiles()))
-	{
-		printf("\n  You cannot play the required number of cards to complete your turn.");
-		OnLoss();
-		return;
-	}
+	if (activePlayer.isAI)
+		printf(" (AI)");
 
 	PlayTurn(activePlayer);
 
@@ -83,9 +79,9 @@ void Game::OnPlayerWin(Player& activePlayer)
 
 	// If any player has not completed their turn, set allPlayersCompleted
 	// to false.
-	for (Player& player : playerHandler.GetPlayers())
+	for (auto& player : playerHandler.GetPlayers())
 	{
-		if (!player.completed)
+		if (!player->completed)
 		{
 			allPlayersCompleted = false;
 			break;
@@ -165,7 +161,7 @@ void Game::OnRestart()
 void Game::PlayTurn(Player& activePlayer)
 {
 	// Keeps track of the number of cards the player has played.
-	int cardsPlayed = 0;
+	short cardsPlayed = 0;
 
 	LOOP:while (true)
 	{
@@ -177,15 +173,23 @@ void Game::PlayTurn(Player& activePlayer)
 		// Prints out the top cards of each play pile.
 		std::cout << "\n\n  " << cardHandler.PlayPilesToString();
 
+		if (!playerHandler.CanPlay(activePlayer.hand, cardHandler.GetDrawPileSize(), cardHandler.GetPlayPiles(), cardsPlayed))
+		{
+			printf("\n\n  You cannot play the required number of cards to complete your turn.");
+			OnLoss();
+			return;
+		}
+
 		// Asks the user to choose a card and stores its index.
-		short cardIndex = ChooseCard(activePlayer);
+		short cardIndex = activePlayer.ChooseCard(cardHandler.GetPlayPiles());
 
 		// If user entered 0, then end the player's turn.
 		if (cardIndex == -1)
 		{
-			if (!CheckForTurnEnd(activePlayer, cardsPlayed, true))
-				printf("\n  ==========================================================");
+			if (CheckForTurnEnd(activePlayer, cardsPlayed, true))
+				return;
 
+			printf("\n  ==========================================================");
 			goto LOOP;
 		}
 
@@ -194,14 +198,15 @@ void Game::PlayTurn(Player& activePlayer)
 		printf("\n  You selected card: %d (%d)", cardIndex + 1, card);
 
 		// Asks the user to choose a pile and stores its index.
-		short pileIndex = ChoosePile();
+		short pileIndex = activePlayer.ChoosePile();
 
 		// If user entered 0, then end the player's turn.
 		if (pileIndex == -1)
 		{
-			if (!CheckForTurnEnd(activePlayer, cardsPlayed, true))
-				printf("\n  ==========================================================");
+			if (CheckForTurnEnd(activePlayer, cardsPlayed, true))
+				return;
 
+			printf("\n  ==========================================================");
 			goto LOOP;
 		}
 
@@ -223,45 +228,9 @@ void Game::PlayTurn(Player& activePlayer)
 
 
 		if (CheckForTurnEnd(activePlayer, cardsPlayed, false))
-			break;
+			return;
 
 		printf("\n\n  ==========================================================");	
-	}
-}
-
-// Asks the user to choose a card and returns its index.
-short& Game::ChooseCard(Player& activePlayer)
-{
-	while (true)
-	{
-		std::cout << "\n\n  Choose the card you want to play (the number in the brackets) or enter \"0\" to end your turn: ";
-		short card = Utilities::GetNumberInput();
-
-		if (card > -1 && card <= activePlayer.GetHandSize())
-		{
-			card--;
-			return card;
-		}
-
-		std::cout << "  Number out of range. Must be > 0 and <= " << activePlayer.GetHandSize();
-	}
-}
-
-// Asks the user to choose a play pile and returns its index.
-short& Game::ChoosePile()
-{
-	while (true)
-	{
-		std::cout << "\n\n  Choose the play pile you want to put your card in (the number in the brackets) or enter \"0\" to end your turn: ";
-		short& pile = Utilities::GetNumberInput();
-
-		if (pile > -1 && pile <= 4)
-		{
-			pile--;
-			return pile;
-		}
-
-		std::cout << "  Number out of range. Must be > 0 and <= 4";
 	}
 }
 
@@ -275,6 +244,13 @@ bool Game::CheckForTurnEnd(Player& activePlayer, const short& cardsPlayed, const
 		if (activePlayer.GetHandSize() == 0)
 		{
 			OnPlayerWin(activePlayer);
+			return true;
+		}
+
+		if (activePlayer.isAI)
+		{
+			// Refill cards to max.
+			cardHandler.RefillHand(activePlayer, playerHandler.GetPlayersSize());
 			return true;
 		}
 

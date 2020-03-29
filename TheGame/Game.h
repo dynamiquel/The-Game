@@ -24,8 +24,6 @@ class Game
 		void OnRestart();
 
 		void PlayTurn(Player& activePlayer);
-		short& ChooseCard(Player& activePlayer);
-		short& ChoosePile();
 		bool CheckForTurnEnd(Player& activePlayer, const short& cardsPlayed, const bool& forceEnd);
 
 		void Test();

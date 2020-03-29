@@ -147,21 +147,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIPlayer.cpp" />
     <ClCompile Include="CardHandler.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Order.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerHandler.cpp" />
     <ClCompile Include="PlayPile.cpp" />
+    <ClCompile Include="RealPlayer.cpp" />
     <ClCompile Include="TheGame.cpp" />
     <ClCompile Include="Utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIPlayer.h" />
     <ClInclude Include="CardHandler.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerHandler.h" />
     <ClInclude Include="PlayPile.h" />
+    <ClInclude Include="RealPlayer.h" />
     <ClInclude Include="Utilities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

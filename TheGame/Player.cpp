@@ -1,10 +1,6 @@
 #include "Player.h"
-
-Player::Player(const bool& isAI)
-{
-	this->isAI = isAI;
-	completed = false;
-}
+#include "Utilities.h"
+#include <iostream>
 
 // Adds the card to the player's hand.
 void Player::AddCard(const short& card)

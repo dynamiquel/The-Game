@@ -1,3 +1,4 @@
+#include "PlayPile.h"
 #include<vector>
 #include<cstring>
 #include<string>
@@ -11,11 +12,12 @@ class Player
 		bool isAI;
 		bool completed;
 
-		Player(const bool& isAI);
+		//Player();
 		void AddCard(const short& card);
 		void RemoveCard(const short& index);
 		short GetHandSize() const;
 
 		std::string HandToString();
+		virtual short& ChooseCard(const PlayPile* playPiles = nullptr) = 0;
+		virtual short& ChoosePile() = 0;
 };
-

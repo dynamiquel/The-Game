@@ -1,6 +1,7 @@
 #include "PlayPile.h"
 #include "Player.h"
 #include <vector>
+#include <memory>
 
 #pragma once
 class CardHandler
@@ -16,7 +17,7 @@ class CardHandler
 		void SetupDrawPile();
 		void ShuffleDrawPile();
 		void EmptyPlayPiles();
-		void DealCards(std::vector<Player>& players);
+		void DealCards(std::vector<std::unique_ptr<Player>>& players);
 		bool WithdrawFromDrawPile(short& card);
 		void RefillHand(Player& player, const short& playerCount);
 
