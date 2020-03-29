@@ -1,3 +1,4 @@
+#include "PlayPile.h"
 #include<vector>
 #include<cstring>
 #include<string>
@@ -17,6 +18,6 @@ class Player
 		short GetHandSize() const;
 
 		std::string HandToString();
-		virtual short& ChooseCard() = 0;
+		virtual short& ChooseCard(const PlayPile* playPiles = nullptr) = 0;
 		virtual short& ChoosePile() = 0;
 };

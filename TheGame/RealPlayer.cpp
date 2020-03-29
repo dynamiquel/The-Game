@@ -10,7 +10,7 @@ RealPlayer::RealPlayer()
 }
 
 // Asks the user to choose a card and returns its index.
-short& RealPlayer::ChooseCard()
+short& RealPlayer::ChooseCard(const PlayPile* playPiles)
 {
 	while (true)
 	{

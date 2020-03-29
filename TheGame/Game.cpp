@@ -56,6 +56,9 @@ void Game::OnLoop()
 	// Converts the unique pointer to a reference to remove the 'it is a deleted function' error.
 	Player& activePlayer = *(playerHandler.GetPlayers()[playerHandler.GetCurrentPlayer()]);
 
+	if (activePlayer.isAI)
+		printf(" (AI)");
+
 	PlayTurn(activePlayer);
 
 	// If the game is still running by the time we reached the end of the loop, set the next player.
@@ -178,7 +181,7 @@ void Game::PlayTurn(Player& activePlayer)
 		}
 
 		// Asks the user to choose a card and stores its index.
-		short cardIndex = activePlayer.ChooseCard();
+		short cardIndex = activePlayer.ChooseCard(cardHandler.GetPlayPiles());
 
 		// If user entered 0, then end the player's turn.
 		if (cardIndex == -1)
@@ -244,6 +247,13 @@ bool Game::CheckForTurnEnd(Player& activePlayer, const short& cardsPlayed, const
 			return true;
 		}
 
+		if (activePlayer.isAI)
+		{
+			// Refill cards to max.
+			cardHandler.RefillHand(activePlayer, playerHandler.GetPlayersSize());
+			return true;
+		}
+
 		printf("\n\n  You have played the minimum number of required cards. Do you wish to keep going? ");
 
 		// If the user entered no, end their turn.
@@ -253,7 +263,7 @@ bool Game::CheckForTurnEnd(Player& activePlayer, const short& cardsPlayed, const
 		if (s == "no" || s == "n" || s == "No")
 		{
 			// Refill cards to max.
-			//cardHandler.RefillHand(activePlayer, playerHandler.GetPlayersSize());
+			cardHandler.RefillHand(activePlayer, playerHandler.GetPlayersSize());
 			return true;
 		}
 	}

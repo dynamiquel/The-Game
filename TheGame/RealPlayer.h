@@ -5,6 +5,6 @@ class RealPlayer : public Player
 {
 	public:
 		RealPlayer();
-		short& ChooseCard() override;
+		short& ChooseCard(const PlayPile* playPiles = nullptr) override;
 		short& ChoosePile() override;
 };

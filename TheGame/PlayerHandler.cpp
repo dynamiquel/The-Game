@@ -47,6 +47,7 @@ void PlayerHandler::SetupPlayers()
 {
 	// Gets the number of real and AI players.
 	short numOfPlayers = SetupRealPlayers();
+	//short numOfPlayers = 0;
 	short numOfAI = SetupAIPlayers(numOfPlayers);
 
 	// Clears the players vector in case this was a restart and it already had players in it.

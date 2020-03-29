@@ -119,9 +119,6 @@ bool CardHandler::WithdrawFromDrawPile(short& card)
 
 void CardHandler::RefillHand(Player& player, const short& playerCount)
 {
-	printf("Player hand size: %d", player.GetHandSize());
-	printf("Player count: %d", playerCount);
-	printf("Max hand size: %d", GetHandSize(playerCount));
 	while (player.GetHandSize() < GetHandSize(playerCount))
 	{
 		short cardToAdd;

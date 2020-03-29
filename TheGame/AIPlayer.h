@@ -6,7 +6,7 @@ class AIPlayer : public Player
 {
 	public:
 		AIPlayer();
-		short& ChooseCard() override;
+		short& ChooseCard(const PlayPile* playPiles = nullptr) override;
 		short& ChoosePile() override;
 };
 
